@@ -1,14 +1,25 @@
 <head>
-  <title>rps</title>
+	<title>rps</title>
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
+	<h1>Welcome to Meteor!</h1>
+	<button name='add-event' value='add avent' id='add-event'>add event</button>
+	<h2>User 1</h2>
+	{{#each moves_1}}
+	{{> move}}
+	{{/each}}
+	<h2>User 2</h2>
+	{{#each moves_2}}
+	{{> move}}
+	{{/each}}
 </body>
 
 <template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+	<button>Click Me</button>
+	<p>You've pressed the button {{counter}} times.</p>
+</template>
+
+<template name="move">
+	<p>{{user}}, {{move}}, {{createdAt}}</p>
 </template>
