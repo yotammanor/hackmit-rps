@@ -1,19 +1,51 @@
 <head>
-	<title>rps</title>
+	<title> Play "Rock, Papers, Scissors" using Myo! </title>
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="/css/general.css">
+	<link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+	<script src="/javascript/jquery.countdown360.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/javascript/general.js" type="text/javascript" charset="utf-8"></script>
+
 </head>
 
 <body>
-	<h1>Welcome to Meteor!</h1>
-	<button name='add-event' value='add avent' id='add-event'>add event</button>
-	<h2>User 1</h2>
-	{{#each moves_1}}
-	{{> move}}
-	{{/each}}
-	<h2>User 2</h2>
-	{{#each moves_2}}
-	{{> move}}
-	{{/each}}
+	<div class="row" id="nav_row">
+		<div class="nav-bar col-sm-3">Player One: <span id="score1">0</span></div>
+		<div class="nav-bar col-sm-6" id="name_of_game">Rock, Paper, Scissors, shoot!</div>
+		<div class="nav-bar col-sm-3">Player Two: <span id="score2">0</span></div>
+	</div>
+	<div class="row" id="main_row">
+		<div class="main-col col-sm-3">
+			<img id="actions1"/>
+			<div>
+				<h2>User 1</h2>
+				{{#each moves_1}}
+				{{> move}}
+				{{/each}}
+			</div>
+		</div>
+		<div class="main-col col-sm-6" id="countdown"></div>
+		<div class="main-col col-sm-3">
+			<img id="actions2"/>
+			<div>
+				<h2>User 2</h2>
+				{{#each moves_2}}
+				{{> move}}
+				{{/each}}
+			</div>
+		</div>
+		<div class="clearfix visible-sm-block"></div>
+	</div>
+
+	<div class="row" id="game_options"> 
+		<button type="button" onClick='start()' id="start"> Start </button> 
+		<button name='add-event' value='add avent' id='add-event'>add event</button>
+	</div>
+
 </body>
+
 
 <template name="hello">
 	<button>Click Me</button>
@@ -21,5 +53,5 @@
 </template>
 
 <template name="move">
-	<p>{{user}}, <b>{{move}}</b>, {{createdAt}}</p>
+	<p>{{user}}, {{createdAt}}, <span><img src="/images/{{move}}.png"></span></p>
 </template>

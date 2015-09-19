@@ -1,0 +1,46 @@
+body{
+	position: relative;
+	left: 2%;
+	width: 96%;	
+}
+
+#nav_row {
+	position: relative;
+	top: 15px;
+}
+
+
+#main_row {
+	position: relative;
+	top: 45px;
+}
+
+.main-col { 
+	position: relative;
+	height: 150px;
+	text-align: center;
+}
+
+.actions {
+	position: absolute;
+	width: 85%;
+	top: 40%;	
+}
+
+#name_of_game {
+	text-align: center;
+	font-family: Oxygen;
+	font-size:120%;
+}
+
+#game_options {
+	position: relative;
+	text-align: center;
+	top: 133px;
+}
+
+#start {
+	font-size: 140%;
+	width: 12%;
+	color: green;
+}

@@ -1,0 +1,6 @@
+.main-col { 
+	border: 1px solid red;
+}
+.nav-bar {
+	border: 1px solid blue;
+}
