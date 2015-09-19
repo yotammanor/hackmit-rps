@@ -41,40 +41,62 @@ if (Meteor.isServer) {
 
   // Generates: GET, POST on /api/items and GET, PUT, DELETE on
   // /api/moves/:id for the Moves collection
-  Api.addCollection(Moves);
-
-  // Generates: POST on /api/users and GET, DELETE /api/users/:id for
-  // Meteor.users collection
-  Api.addCollection(Meteor.users, {
-    excludedEndpoints: ['getAll', 'put'],
+  Api.addCollection(Moves, {
     routeOptions: {
       authRequired: false
     },
     endpoints: {
       post: {
-        authRequired: false
+        authRequired: false,
+        action: function () {
+          
+          var params 
+          if (this.bodyParams.hasOwnProperty('user')) {
+            params = this.bodyParams;
+          } else {
+            params = this.queryParams;
+          }
+
+          var a = Moves.insert({
+            user: params.user,
+            move: params.move,
+            createdAt: new Date()
+            })
+          return {"status": 'success', "data": a}
+        }
       },
-      delete: {
-        roleRequired: 'admin'
-      }
     }
   });
 
+
   // // Maps to: /api/moves/:id
   // Api.addRoute('moves/:id', {authRequired: false}, {
+  //   // get: function () {
+  //   //   return Moves.findOne(this.urlParams.id);
+  //   // },
+  //   // delete: {
+  //   //   roleRequired: ['author', 'admin'],
+  //   //   action: function () {
+  //   //     if (Moves.remove(this.urlParams.id)) {
+  //   //       return {status: 'success', data: {message: 'Article removed'}};
+  //   //     }
+  //   //     return {
+  //   //       statusCode: 404,
+  //   //       body: {status: 'fail', message: 'Article not found'}
+  //   //     };
+  //   //   }
+  //   // },
   //   get: function () {
-  //     return Moves.findOne(this.urlParams.id);
+  //     return Moves.find({}, {sort: {createdAt: -1}})
   //   },
-  //   delete: {
-  //     roleRequired: ['author', 'admin'],
-  //     action: function () {
-  //       if (Moves.remove(this.urlParams.id)) {
-  //         return {status: 'success', data: {message: 'Article removed'}};
-  //       }
-  //       return {
-  //         statusCode: 404,
-  //         body: {status: 'fail', message: 'Article not found'}
-  //       };
+  //   post: {
+  //     action: function() {
+  //       Moves.insert({
+  //         move: this.urlParams.move,
+  //         user: this.urlParams.user,
+  //         createdAt: new Date()
+  //       })
+  //       return {status: 'success', data: Moves.find({user: this.urlParams.user}, {sort: {createdAt: -1}, limit:1})};
   //     }
   //   }
   // });
