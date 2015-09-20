@@ -60,7 +60,7 @@ if (Meteor.isClient) {
 
       user_1_move = Moves.findOne({user: '1'})
       user_2_move = Moves.findOne({user: '2'})
-      
+      winning_move = getWinner(user_1_move, user_2_move)
 
       // Add a point to winning player,
       var user = Scores.findOne({_id: '1'})
@@ -78,6 +78,20 @@ if (Meteor.isClient) {
       console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
     }
 
+    function getRoundWinner(move1, move2) {
+      if (move1.move == move2.move) {
+        // tie
+        return null;
+      }
+      return getWinningMove(move1.move, move2.move) == move1.move ? move1 : move2;
+    }
+
+    function getWinningMove(moveName1, moveName2) {
+      var moveNums = {rock: 1, paper: 2, scissors: 3};
+      var numMoves = {1: "rock", 2: "paper", 3: "scissors"};
+      var maxMin = moveNums[moveName1] % 2 == moveNums[moveName2] % 2 ? min : max;
+      return numMoves(maxMin(moveNums[moveName1], moveNums[moveName2]));
+    }
   })
 }
 
