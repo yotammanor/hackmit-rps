@@ -82,6 +82,8 @@ class Listener(libmyo.DeviceListener):
             sendMove("rock", timestamp)
         elif pose == libmyo.Pose.fingers_spread:
             sendMove("paper", timestamp)
+        elif pose == libmyo.Pose.wave_out:
+            sendMove("paper", timestamp)
         elif pose == libmyo.Pose.wave_in:
             sendMove("scissors", timestamp)
 
