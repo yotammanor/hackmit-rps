@@ -94,6 +94,7 @@ fieldset[disabled] .btn-default.active {
 .scorebox {
 	background-color: #1E90FF;
 	font-size: 24px;
+	text-align: center;
 }
 
 #score1, #score2 {
