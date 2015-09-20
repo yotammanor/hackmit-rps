@@ -6,7 +6,7 @@ Rounds = new Mongo.Collection("rounds");
 
 Winnings = new Mongo.Collection('Winnings');
 
-var THRESHOLD =  1;
+var THRESHOLD =  3;
 
 if (Meteor.isClient) {
   Template.body.helpers({
