@@ -1,21 +1,21 @@
 <head>
 	<title> Play "Rock, Papers, Scissors" using Myo! </title>
-	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="/css/general.css">
+	<link rel="stylesheet" type="text/css" href="public/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="public/css/general.css">
 	<link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-	<script src="/javascript/jquery.countdown360.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/javascript/general.js" type="text/javascript" charset="utf-8"></script>
+	<script src="public/javascript/jquery.countdown360.js" type="text/javascript" charset="utf-8"></script>
+	<script src="public/javascript/general.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
 
 <body>
-	<div class="row" id="nav_row">
-		<div class="nav-bar col-sm-3">Player One: <span id="score1">{{user_1_score}}</span></div>
-		<div class="nav-bar col-sm-6" id="name_of_game">Rock, Paper, Scissors, shoot!</div>
+	<div class="row scorebox" id="nav_row">
 		<!-- <div>{{> current_round}}</div> -->
-		<div class="nav-bar col-sm-3">Player Two: <span id="score2">{{user_2_score}}</span></div>
+		<div class="nav-bar col-sm-3">Player One: <br><span id="score1">{{user_1_score}}</span></div>
+		<div class="nav-bar col-sm-6" id="name_of_game"><h1>Rock, Paper, Scissors, shoot!</h1></div>
+		<div class="nav-bar col-sm-3">Player Two: <br><span id="score2">{{user_2_score}}</span></div>
 	</div>
 	<div class="row" id="main_row">
 		<div class="main-col col-sm-3" id="user1">
@@ -38,10 +38,10 @@
 
 	<div class="row" id="game_options"> 
 		<button type="button" onClick='start()' id="start"> Yoni's  original Start button</button> 
-		<button type="button" id="start-round"> Start Round</button> 
-		<button type="button" id="end-round"> End Round</button> 
-		<button type="button" id="start-game"> Start Game</button> 
-		<button name='add-event' value='add avent' id='add-event'>add event</button>
+		<button type="button" class="btn btn-default" id="start-round"> Start Round</button> 
+		<button type="button" class="btn btn-default" id="end-round"> End Round</button> 
+		<button type="button" class="btn btn-default" id="start-game"> Start Game</button> 
+		<button name='add-event' class="btn btn-default" value='add avent' id='add-event'>add event</button>
 	</div>
 
 </body>
