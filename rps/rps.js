@@ -59,6 +59,7 @@ if (Meteor.isClient) {
       // close round, assess round results.
 
       user_1_move = Moves.findOne({user: '1'})
+      user_2_move = Moves.findOne({user: '2'})
       
 
       // Add a point to winning player,
