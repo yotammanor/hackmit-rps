@@ -4,6 +4,9 @@ Scores = new Mongo.Collection("scores");
 
 Rounds = new Mongo.Collection("rounds");
 
+Winnings = new Mongo.Collection('Winnings');
+
+var THRESHOLD = 1;
 
 if (Meteor.isClient) {
   Template.body.helpers({
@@ -40,53 +43,55 @@ if (Meteor.isClient) {
       return gameOver();
     },
     winner: function() {
-      if (!gameOver()) {
-        return "";
+      var winningMessage = Winnings.find({}, {sort: {createdAt: -1}, limit: 1})
+      if (typeof winningMessage.count() > 0){
+        return [winningMessage.fetch()[0]];
+      } else {
+        return null
       }
-      return Scores.findOne({_id: '1'}).score == 3 ? "Player 1" : "Player 2";
     }
   });
 
-  Template.body.events({
-    "click #add-event": function (event){
+Template.body.events({
+  "click #add-event": function (event){
 
-      Moves.insert({
-        _id: '1',
-        move: 'rock',
-        user: '1',
-        createdAt: new Date()
-      })
-    },
-    "click #start-game": function(event){
-      console.log('game starts!')
-      resetScores()
+    Moves.insert({
+      _id: '1',
+      move: 'rock',
+      user: '1',
+      createdAt: new Date()
+    })
+  },
+  "click #start-game": function(event){
+    console.log('game starts!')
+    resetScores()
 
-    },
-    "click #start-round": function(event){
-      console.log('round starts!')
-      // initiate countdown, remove all current moves from db.
-      var round = Rounds.insert({
-        createdAt: new Date(),
-        status: 'pending',
-      })
+  },
+  "click #start-round": function(event){
+    console.log('round starts!')
+    if (Rounds.find({'status': 'open'}).count() == 0){
+        // initiate countdown, remove all current moves from db.
+        var round = Rounds.insert({
+          createdAt: new Date(),
+          status: 'pending',
+        })
+         // start animation
+         start()
 
+          // Open round for input
+          Rounds.update({_id: round}, {$set: {status: 'open'}})
+        } else {
+          console.log('round is already open, close first')
+        };
+      },
+      "click #end-round": endRound
+    });
 
-
-      // start animation
-      start()
-
-      // Open round for input
-      Rounds.update({_id: round}, {$set: {status: 'open'}})
-      console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
-    },
-    "click #end-round": endRound
-  });
-
-  Template.move_obj.events({
-    "click #start-round": function function_name (events) {
-        countdown()
-    }
-  })
+Template.move_obj.events({
+  "click #start-round": function function_name (events) {
+    countdown()
+  }
+})
 }
 
 function endRound() {
@@ -95,13 +100,6 @@ function endRound() {
   user_1_move = Moves.findOne({user: '1'})
   user_2_move = Moves.findOne({user: '2'})
 
-  var endOfRoundCls = EndOfRound
-  endOfRoundCls()
-
-  var id = document.getElementById("countdown");
-  setTimeout(function(){
-    id.innerHTML = "";
-  }, 3000);
   // Add a point to winning player,
   var move = getRoundWinner(user_1_move, user_2_move);
   if (move) {
@@ -111,8 +109,10 @@ function endRound() {
   }
 
   // Delete old moves.
-  Moves.remove({_id: '1'});
-  Moves.remove({_id: '2'});
+  Meteor.setTimeout(function(){
+    Moves.remove({_id: '1'});
+    Moves.remove({_id: '2'});
+  }, 3000)
 
   // Set round to be closed.
   var open_rounds = Rounds.find({status: 'open'}, {sort: {createdAt: -1}, limit: 1})
@@ -121,7 +121,10 @@ function endRound() {
 
   console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status']);
 
+  var isGameOver = gameOver();
+  console.log(isGameOver);
   if (gameOver()) {
+    console.log('here game over')
     endGame();
   }
 }
@@ -144,13 +147,26 @@ function gameOver() {
   // Tests if both players have score 3
   var user1Score = Scores.findOne({_id: '1'});
   var user2Score = Scores.findOne({_id: '2'});
-  var isGameOver = user1Score.score >= 3 || user2Score.score >= 3
-  return typeof isGameOver === 'object'? isGameOver : false;
+  var isGameOver = user1Score.score >= THRESHOLD || user2Score.score >= THRESHOLD
+  return typeof isGameOver === 'boolean' ? isGameOver : false;
 }
 
 function endGame() {
+  var user1Score = Scores.findOne({_id: '1'});
+  var user2Score = Scores.findOne({_id: '2'});
+  Winnings.insert({
+    _id: '1',
+    createdAt: new Date(),
+    winner: function() {return user1Score.score > user2Score.score ? user1Score.user : user2Score.user},
+  })
+
+  Meteor.setTimeout(function(){
+    console.log('game has ended')
+    
+  }, 5000)
   resetScores()
   resetRounds()
+  Winnings.remove({_id: '1'})
 };
 
 
@@ -195,7 +211,6 @@ if (Meteor.isServer) {
     }
 
     var currentRound = Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0];
-    console.log(typeof currentRound);
     
     if (typeof currentRound === 'object' && currentRound['status'] == 'open') {
 
@@ -212,8 +227,6 @@ if (Meteor.isServer) {
         createdAt: new Date()
       });
 
-      $(document).getElementById('user' + a.user).innerHTML = '';
-
       if (Moves.findOne({_id: '1'}) && Moves.findOne({_id: '2'})) {
         endRound();
       }
@@ -228,6 +241,7 @@ if (Meteor.isServer) {
     Moves.remove({});
     Scores.remove({});
     Rounds.remove({});
+    Winnings.remove({});
 
     Scores.insert({_id:'1', user: '1', score: 0})
     Scores.insert({_id:'2', user: '2', score: 0})

@@ -42,9 +42,11 @@ $(document).on("click","button",function(e){
 
 $(document).ready( function(){
 	$('body').on('DOMNodeInserted', '.move-by-player', function(e){
-		console.log($('.move-by-player'));
-		console.log($(this).data('user'))
 		document.getElementById('user' + $(this).data('user')).innerHTML = '';
+
+		if ($('.move-by-player').length == 2) {
+			endOfRound()
+		}
 	});
 });
 
