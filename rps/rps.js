@@ -19,7 +19,7 @@ if (Meteor.isClient) {
     },
     user_1_score: function() {
       return Scores.findOne({_id: '1'}).score;
-    }
+    },
     user_2_score: function() {
       return Scores.findOne({_id: '2'}).score;
     }
