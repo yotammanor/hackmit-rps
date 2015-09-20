@@ -90,6 +90,7 @@ function endOfRound() {
 	id.innerHTML = "";
 	var img = document.createElement("img");
 	img.src = "images/victory" + picNum + ".png";
+	img.className = "img-rounded"
 	// id.appendChild(msg);
 	id.appendChild(img);
 	setTimeout(function(){
