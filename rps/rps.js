@@ -37,6 +37,15 @@ if (Meteor.isClient) {
       var user_score = Scores.findOne({_id: '2'})
       return typeof user_score === 'object' ? user_score.score : 0;
     }
+    game_over: function() {
+      return gameOver();
+    }
+    winner: function() {
+      if (!gameOver()) {
+        return "";
+      }
+      return Scores.findOne({_id: '1'}).score == 3 ? "Player 1" : "Player 2";
+    }
   });
 
   Template.body.events({
@@ -123,7 +132,7 @@ function gameOver() {
   // Tests if both players have score 3
   var user1Score = Scores.findOne({_id: '1'});
   var user2Score = Scores.findOne({_id: '2'});
-  return (user1Score.score == 3 && user2Score.score == 3);
+  return (user1Score.score >= 3 || user2Score.score >= 3);
 }
 
 function endGame() {

@@ -94,9 +94,15 @@ fieldset[disabled] .btn-default.active {
 .scorebox {
 	background-color: #1E90FF;
 	font-size: 24px;
+	text-align: center;
 }
 
 #score1, #score2 {
 	color: #FFFFFF;
 	font-size: 36px;
+}
+
+#win-message {
+	text-align: center;
+	font-size: 24px;
 }
