@@ -1,5 +1,7 @@
-function countdown(time) {
-	var countdown =  $("#countdown").countdown360({
+var Countdown = function countdown(time) {
+	console.log($('#countdown'))
+	$("#countdown").html('');
+	return $("#countdown").countdown360({
 		radius      : 60,
 		seconds     : time,
 		fontColor   : '#FFFFFF',
@@ -23,7 +25,6 @@ function countdown(time) {
 			}, 1000);
 		}
 	});
-	countdown.start();
 }
 
 function selectPic() {
@@ -56,7 +57,10 @@ function reset() {
 }
 
 function start() {
-	countdown(2);
+	var clock;
+	$('#countdown')[0].innerHTML = '';
+	var clock = new Countdown(2);
+	clock.start();
 }
 
 function endOfGame() {
@@ -75,13 +79,13 @@ function endOfRound() {
 	var winner = Math.round(Math.random()) + 1; // winner will randomly be either 1 or 2
 	var picNum = Math.round(Math.random() * 5) + 1; // winner will randomly be an integer in the range 1-6
 	var id = document.getElementById("countdown");
-	var msg = document.createElement("div");
-	msg.innerHTML = "scissors beats rock, player " + winner + " wins this round!";
-	msg.style.fontSize = "150%";
+	// var msg = document.createElement("div");
+	// msg.innerHTML = "scissors beats rock, player " + winner + " wins this round!";
+	// msg.style.fontSize = "150%";
 	id.innerHTML = "";
 	var img = document.createElement("img");
 	img.src = "images/victory" + picNum + ".png";
-	id.appendChild(msg);
+	// id.appendChild(msg);
 	id.appendChild(img);
 	setTimeout(function(){
 		id.innerHTML = "";

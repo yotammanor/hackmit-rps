@@ -6,7 +6,7 @@ Rounds = new Mongo.Collection("rounds");
 
 Winnings = new Mongo.Collection('Winnings');
 
-var THRESHOLD = 1;
+var THRESHOLD = 3;
 
 if (Meteor.isClient) {
   Template.body.helpers({
@@ -63,8 +63,11 @@ Template.body.events({
     })
   },
   "click #start-game": function(event){
-    console.log('game starts!')
-    resetScores()
+    console.log('game restarts!')
+    document.getElementById('user1').innerHTML = '';
+    document.getElementById('user2').innerHTML = '';
+    document.getElementById('countdown').innerHTML = '';
+    Meteor.call('resetDB')
 
   },
   "click #start-round": function(event){
@@ -86,6 +89,7 @@ Template.body.events({
       },
       "click #end-round": endRound
     });
+
 
 Template.move_obj.events({
   "click #start-round": function function_name (events) {
@@ -159,6 +163,8 @@ function endGame() {
     createdAt: new Date(),
     winner: function() {return user1Score.score > user2Score.score ? user1Score.user : user2Score.user},
   })
+
+  console.log(Winnings.findOne({_id: '1'}))
 
   Meteor.setTimeout(function(){
     console.log('game has ended')
@@ -238,6 +244,7 @@ if (Meteor.isServer) {
 
   Meteor.startup(function () {
     // code to run on server at startup
+
     Moves.remove({});
     Scores.remove({});
     Rounds.remove({});
@@ -245,6 +252,22 @@ if (Meteor.isServer) {
 
     Scores.insert({_id:'1', user: '1', score: 0})
     Scores.insert({_id:'2', user: '2', score: 0})
-    resetScores()
+    resetScores();
+
+    return Meteor.methods({
+
+      resetDB: function() {
+
+        Moves.remove({});
+        Scores.remove({});
+        Rounds.remove({});
+        Winnings.remove({});
+
+        Scores.insert({_id:'1', user: '1', score: 0})
+        Scores.insert({_id:'2', user: '2', score: 0})
+        resetScores()
+      }
+
+    });
   });
 }
