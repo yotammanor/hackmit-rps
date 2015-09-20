@@ -112,7 +112,7 @@ function gameOver() {
   // Tests if both players have score 3
   var user1Score = Scores.findOne({_id: '1'});
   var user2Score = Scores.findOne({_id: '2'});
-  return (user1Score.score == 3 && user2Score.score == 3);
+  return (user1Score.score >= 3 || user2Score.score >= 3);
 }
 
 function endGame() {
