@@ -43,36 +43,35 @@ if (Meteor.isClient) {
       return gameOver();
     },
     winner: function() {
-      var winningMessage = Winnings.find({}, {sort: {createdAt: -1}, limit: 1})
-      if (typeof winningMessage.count() > 0){
-        return [winningMessage.fetch()[0]];
-      } else {
-        return null
-      }
-    }
-  });
+      var winning = Winnings.find({})
 
-Template.body.events({
-  "click #add-event": function (event){
+      if (typeof winning === 'undefined') {
+       return null
+     }
+     return winning;
+   }});
 
-    Moves.insert({
-      _id: '1',
-      move: 'rock',
-      user: '1',
-      createdAt: new Date()
-    })
-  },
-  "click #start-game": function(event){
-    console.log('game restarts!')
-    document.getElementById('user1').innerHTML = '';
-    document.getElementById('user2').innerHTML = '';
-    document.getElementById('countdown').innerHTML = '';
-    Meteor.call('resetDB')
+  Template.body.events({
+    "click #add-event": function (event){
 
-  },
-  "click #start-round": function(event){
-    console.log('round starts!')
-    if (Rounds.find({'status': 'open'}).count() == 0){
+      Moves.insert({
+        _id: '1',
+        move: 'rock',
+        user: '1',
+        createdAt: new Date()
+      })
+    },
+    "click #start-game": function(event){
+      console.log('game restarts!')
+      document.getElementById('user1').innerHTML = '';
+      document.getElementById('user2').innerHTML = '';
+      document.getElementById('countdown').innerHTML = '';
+      Meteor.call('resetDB')
+
+    },
+    "click #start-round": function(event){
+      console.log('round starts!')
+      if (Rounds.find({'status': 'open'}).count() == 0){
         // initiate countdown, remove all current moves from db.
         var round = Rounds.insert({
           createdAt: new Date(),
@@ -158,21 +157,23 @@ function gameOver() {
 function endGame() {
   var user1Score = Scores.findOne({_id: '1'});
   var user2Score = Scores.findOne({_id: '2'});
+
+  var winner =  user1Score.score > user2Score.score ? user1Score.user : user2Score.user;
   Winnings.insert({
     _id: '1',
     createdAt: new Date(),
-    winner: function() {return user1Score.score > user2Score.score ? user1Score.user : user2Score.user},
+    winner: winner,
   })
 
   console.log(Winnings.findOne({_id: '1'}))
 
   Meteor.setTimeout(function(){
     console.log('game has ended')
-    
-  }, 5000)
-  resetScores()
-  resetRounds()
-  Winnings.remove({_id: '1'})
+    resetScores()
+    resetRounds()
+    Winnings.remove({_id: '1'})
+  }, 8000)
+
 };
 
 
