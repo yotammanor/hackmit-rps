@@ -77,6 +77,7 @@ function endRound() {
     Scores.update({_id: user}, {$set: {score: userScore.score + 1}});
   }
 
+
   // Delete old moves.
   Moves.remove({_id: '1'});
   Moves.remove({_id: '2'});
@@ -93,6 +94,20 @@ function endRound() {
   }
 }
 
+function getRoundWinner(move1, move2) {
+  if (move1.move == move2.move) {
+    // tie
+    return null;
+  }
+  return getWinningMove(move1.move, move2.move) == move1.move ? move1 : move2;
+}
+
+function getWinningMove(moveName1, moveName2) {
+  var moveNums = {rock: 1, paper: 2, scissors: 3};
+  var numMoves = {1: "rock", 2: "paper", 3: "scissors"};
+  var maxMin = moveNums[moveName1] % 2 == moveNums[moveName2] % 2 ? min : max;
+  return numMoves(maxMin(moveNums[moveName1], moveNums[moveName2]));
+}
 function gameOver() {
   // Tests if both players have score 3
   var user1Score = Scores.findOne({_id: '1'});
@@ -102,6 +117,7 @@ function gameOver() {
 
 function endGame() {
   resetScores()
+  Rounds.remove({})
 };
 
 function resetScores() {
@@ -144,6 +160,9 @@ if (Meteor.isServer) {
     console.log(typeof currentRound);
     
     if (typeof currentRound === 'object' && currentRound['status'] == 'open') {
+
+
+// check if the user already sent a move for this round (a.k.a. it exists in the mongoDB)
       var a = Moves.insert({
         _id: params.user,
         user: params.user,
