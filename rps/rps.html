@@ -14,7 +14,8 @@
 	<div class="row" id="nav_row">
 		<div class="nav-bar col-sm-3">Player One: <span id="score1">{{user_1_score}}</span></div>
 		<div class="nav-bar col-sm-6" id="name_of_game">Rock, Paper, Scissors, shoot!</div>
-		<div class="nav-bar col-sm-3">Player Two: <span id="score2">0</span></div>
+		<!-- <div>{{> current_round}}</div> -->
+		<div class="nav-bar col-sm-3">Player Two: <span id="score2">{{user_2_score}}</span></div>
 	</div>
 	<div class="row" id="main_row">
 		<div class="main-col col-sm-3" id="user1">
@@ -48,4 +49,8 @@
 
 <template name="move">
 	<p>{{user}}, {{createdAt}}, <span><img src="/images/{{move}}.png"  alt="Image not found"></span></p>
+</template>
+
+<template name="current_round">
+	{{>current_round}}
 </template>

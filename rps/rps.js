@@ -1,27 +1,31 @@
 Moves = new Mongo.Collection("moves");
 
-Scores = new Mongo.Collection("scores")
+Scores = new Mongo.Collection("scores");
 
-Rounds = new Mongo.Collection("rounds")
+Rounds = new Mongo.Collection("rounds");
+
 
 if (Meteor.isClient) {
-
-
   Template.body.helpers({
     // moves: [
     // {'user': 1},
     // {'user': 2},
     // ]
     moves_1: function() {
-      return moves_1 = Moves.find({user: '1'}, {sort: {createdAt: -1}, limit: 1})
+      return Moves.find({user: '1'}, {sort: {createdAt: -1}, limit: 1})
     },
     moves_2: function() {
       return Moves.find({user: '2'}, {sort: {createdAt: -1}, limit: 1});
     },
     user_1_score: function() {
       return Scores.findOne({_id: '1'}).score;
+    },
+    current_round: function(){
+        return Rounds.find().count()
+    },
+    user_2_score: function() {
+      return Scores.findOne({_id: '2'}).score;
     }
-
   });
 
   Template.body.events({
@@ -112,6 +116,10 @@ function gameOver() {
 }
 
 function endGame() {
+  resetScores()
+};
+
+function resetScores() {
   // Set scores to zero
   Scores.update({_id: '1'}, {$set: {score: 0}});
   Scores.update({_id: '2'}, {$set: {score: 0}});
@@ -166,13 +174,6 @@ if (Meteor.isServer) {
     }
   }
 
-  function resetScores() {
-
-    Scores.update({_id: '1'}, {$set: {score: 0}})
-    Scores.update({_id: '2'}, {$set: {score: 0}})
-  }
-
-
   Meteor.startup(function () {
     // code to run on server at startup
     Moves.remove({});
@@ -184,6 +185,3 @@ if (Meteor.isServer) {
     resetScores()
   });
 }
-
-
-
