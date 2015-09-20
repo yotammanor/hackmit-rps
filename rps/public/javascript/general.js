@@ -1,6 +1,5 @@
-var Countdown = function countdown(time) {
-	console.log($('#countdown'))
-	$("#countdown").html('');
+function countdown(time) {
+	
 	return $("#countdown").countdown360({
 		radius      : 60,
 		seconds     : time,
@@ -57,10 +56,16 @@ function reset() {
 }
 
 function start() {
-	var clock;
-	$('#countdown')[0].innerHTML = '';
-	var clock = new Countdown(2);
-	clock.start();
+
+	var clock = countdown(2);
+	if (typeof clock.startedAt === 'undefined'){
+		clock.start();
+	} else {
+		var start = new Date(clock.startedAt)
+		var end = new Date()
+		clock._init()
+		clock.addSeconds(Math.floor((end - start)/1000) + 1)
+	}
 }
 
 function endOfGame() {
