@@ -101,3 +101,8 @@ fieldset[disabled] .btn-default.active {
 	color: #FFFFFF;
 	font-size: 36px;
 }
+
+#win-message {
+	text-align: center;
+	font-size: 24px;
+}

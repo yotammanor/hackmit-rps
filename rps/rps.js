@@ -26,6 +26,15 @@ if (Meteor.isClient) {
     user_2_score: function() {
       return Scores.findOne({_id: '2'}).score;
     }
+    game_over: function() {
+      return gameOver();
+    }
+    winner: function() {
+      if (!gameOver()) {
+        return "";
+      }
+      return Scores.findOne({_id: '1'}).score == 3 ? "Player 1" : "Player 2";
+    }
   });
 
   Template.body.events({
