@@ -12,7 +12,7 @@
 
 <body>
 	<div class="row" id="nav_row">
-		<div class="nav-bar col-sm-3">Player One: <span id="score1">0</span></div>
+		<div class="nav-bar col-sm-3">Player One: <span id="score1">{{user_1_score}}</span></div>
 		<div class="nav-bar col-sm-6" id="name_of_game">Rock, Paper, Scissors, shoot!</div>
 		<div class="nav-bar col-sm-3">Player Two: <span id="score2">0</span></div>
 	</div>
@@ -40,17 +40,14 @@
 	</div>
 
 	<div class="row" id="game_options"> 
-		<button type="button" onClick='start()' id="start"> Start </button> 
+		<button type="button" onClick='start()' id="start"> Yoni's  original Start button</button> 
+		<button type="button" id="start-round"> Start Round</button> 
+		<button type="button" id="start-game"> Start Game</button> 
 		<button name='add-event' value='add avent' id='add-event'>add event</button>
 	</div>
 
 </body>
 
-
-<template name="hello">
-	<button>Click Me</button>
-	<p>You've pressed the button {{counter}} times.</p>
-</template>
 
 <template name="move">
 	<p>{{user}}, {{createdAt}}, <span><img src="/images/{{move}}.png"></span></p>

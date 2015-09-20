@@ -1,5 +1,6 @@
 Moves = new Mongo.Collection("moves");
 
+Scores = new Mongo.Collection("scores")
 
 if (Meteor.isClient) {
 
@@ -15,6 +16,9 @@ if (Meteor.isClient) {
     },
     moves_2: function() {
       return Moves.find({user: '2'}, {sort: {createdAt: -1}, limit: 1});
+    },
+    user_1_score: function() {
+      return Scores.findOne({user: '1'}).score;
     }
 
   });
@@ -27,7 +31,17 @@ if (Meteor.isClient) {
         user: '1',
         createdAt: new Date()
       })
-    }
+    },
+    "click #start-game": function(event){
+      console.log('game starts!')
+      resetScores()
+    },
+    "click #start-round": function(event){
+      console.log('round starts!')
+      var user = Moves.findOne({user: '1'})
+      Moves.update({user: user.user}, {$set: {score: user.score + 1}})
+    },
+
   })
 }
 
@@ -49,7 +63,7 @@ if (Meteor.isServer) {
       post: {
         authRequired: false,
         action: function () {
-          
+
           var params 
           if (this.bodyParams.hasOwnProperty('user')) {
             params = this.bodyParams;
@@ -61,7 +75,7 @@ if (Meteor.isServer) {
             user: params.user,
             move: params.move,
             createdAt: new Date()
-            })
+          })
           return {"status": 'success', "data": a}
         }
       },
@@ -101,8 +115,25 @@ if (Meteor.isServer) {
   //   }
   // });
 
+function resetScores() {
+  Scores.remove({});
 
-  Meteor.startup(function () {
+  Scores.insert({
+    id: '1',
+    user: '1',
+    score: '0'
+  })
+
+  Scores.insert({
+    id: '1',
+    user: '1',
+    score: '0'
+  })
+}
+
+Meteor.startup(function () {
     // code to run on server at startup
+    resetScores()
   });
 }
+
