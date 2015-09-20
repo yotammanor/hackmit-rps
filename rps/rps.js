@@ -7,20 +7,19 @@ Rounds = new Mongo.Collection("rounds");
 
 if (Meteor.isClient) {
   Template.body.helpers({
-    // moves: [
-    // {'user': 1},
-    // {'user': 2},
-    // ]
+
     move_1: function() {
-      var move_one =  Moves.findOne({user: '1'})
-      if (typeof moves_one === 'undefined') {
-        return null
+      var move_one =  Moves.find({user: '1'})
+      if (typeof move_one === 'undefined') {
+        return [{
+          "move": "loading",
+        },]
       }
       return move_one
     },
     move_2: function() {
 
-      var move_two =  Moves.findOne({user: '2'})
+      var move_two =  Moves.find({user: '2'})
       if (typeof move_two === 'undefined') {
         return null
       }
@@ -30,16 +29,16 @@ if (Meteor.isClient) {
       var user_score = Scores.findOne({_id: '1'})
       return typeof user_score === 'object' ? user_score.score : 0;
     },
-    current_round: function(){
-      return Rounds.find().count()
-    },
     user_2_score: function() {
       var user_score = Scores.findOne({_id: '2'})
       return typeof user_score === 'object' ? user_score.score : 0;
-    }
+    },
+    current_round: function(){
+      return Rounds.find().count()
+    },
     game_over: function() {
       return gameOver();
-    }
+    },
     winner: function() {
       if (!gameOver()) {
         return "";
@@ -61,6 +60,7 @@ if (Meteor.isClient) {
     "click #start-game": function(event){
       console.log('game starts!')
       resetScores()
+
     },
     "click #start-round": function(event){
       console.log('round starts!')
@@ -80,6 +80,12 @@ if (Meteor.isClient) {
       console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
     },
     "click #end-round": endRound
+  });
+
+  Template.move_obj.events({
+    "click #start-round": function function_name (events) {
+        countdown()
+    }
   })
 }
 
@@ -88,7 +94,14 @@ function endRound() {
 
   user_1_move = Moves.findOne({user: '1'})
   user_2_move = Moves.findOne({user: '2'})
-  
+
+  var endOfRoundCls = EndOfRound
+  endOfRoundCls()
+
+  var id = document.getElementById("countdown");
+  setTimeout(function(){
+    id.innerHTML = "";
+  }, 3000);
   // Add a point to winning player,
   var move = getRoundWinner(user_1_move, user_2_move);
   if (move) {
@@ -96,7 +109,6 @@ function endRound() {
     var userScore = Scores.findOne({_id: user});
     Scores.update({_id: user}, {$set: {score: userScore.score + 1}});
   }
-
 
   // Delete old moves.
   Moves.remove({_id: '1'});
@@ -132,13 +144,19 @@ function gameOver() {
   // Tests if both players have score 3
   var user1Score = Scores.findOne({_id: '1'});
   var user2Score = Scores.findOne({_id: '2'});
-  return (user1Score.score >= 3 || user2Score.score >= 3);
+  var isGameOver = user1Score.score >= 3 || user2Score.score >= 3
+  return typeof isGameOver === 'object'? isGameOver : false;
 }
 
 function endGame() {
   resetScores()
-  Rounds.remove({})
+  resetRounds()
 };
+
+
+function resetRounds() {
+  Rounds.remove({})
+}
 
 function resetScores() {
   // Set scores to zero
@@ -193,6 +211,9 @@ if (Meteor.isServer) {
         move: params.move,
         createdAt: new Date()
       });
+
+      $(document).getElementById('user' + a.user).innerHTML = '';
+
       if (Moves.findOne({_id: '1'}) && Moves.findOne({_id: '2'})) {
         endRound();
       }

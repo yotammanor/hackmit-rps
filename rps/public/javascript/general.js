@@ -1,10 +1,10 @@
 function countdown(time) {
 	var countdown =  $("#countdown").countdown360({
-       	 	radius      : 60,
-         	seconds     : time,
-         	fontColor   : '#FFFFFF',
-         	autostart   : false,
-         	onComplete  : function () {
+		radius      : 60,
+		seconds     : time,
+		fontColor   : '#FFFFFF',
+		autostart   : false,
+		onComplete  : function () {
 			var rpsImg = document.createElement("img");
 			rpsImg.src = "images/go.gif";
 			$("#countdown")[0].innerHTML="";
@@ -16,12 +16,14 @@ function countdown(time) {
 				var img2 = document.createElement("img");
 				img1.src = "images/loading.gif";
 				img2.src = "images/loading.gif";
+				img1.className = "loading-image";
+				img2.className = "loading-image";
 				document.getElementById("user1").appendChild(img1);//src="images/loading.gif";
 				document.getElementById("user2").appendChild(img2);//src="images/loading.gif";
 			}, 1000);
 		}
-		   });
-			countdown.start();
+	});
+	countdown.start();
 }
 
 function selectPic() {
@@ -36,6 +38,14 @@ function selectPic() {
 
 $(document).on("click","button",function(e){
 	e.preventDefault();
+});
+
+$(document).ready( function(){
+	$('body').on('DOMNodeInserted', '.move-by-player', function(e){
+		console.log($('.move-by-player'));
+		console.log($(this).data('user'))
+		document.getElementById('user' + $(this).data('user')).innerHTML = '';
+	});
 });
 
 function reset() {
