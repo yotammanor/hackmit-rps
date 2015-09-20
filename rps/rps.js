@@ -22,6 +22,9 @@ if (Meteor.isClient) {
     },
     user_2_score: function() {
       return Scores.findOne({_id: '2'}).score;
+    },
+    current_round: function(){
+        return Rounds.find().count()
     }
   });
 
