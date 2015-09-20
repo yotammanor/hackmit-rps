@@ -101,6 +101,10 @@ function gameOver() {
 }
 
 function endGame() {
+  resetScores()
+};
+
+function resetScores() {
   // Set scores to zero
   Scores.update({_id: '1'}, {$set: {score: 0}});
   Scores.update({_id: '2'}, {$set: {score: 0}});
