@@ -11,20 +11,31 @@ if (Meteor.isClient) {
     // {'user': 1},
     // {'user': 2},
     // ]
-    moves_1: function() {
-      return Moves.find({user: '1'}, {sort: {createdAt: -1}, limit: 1})
+    move_1: function() {
+      var move_one =  Moves.findOne({user: '1'})
+      if (typeof moves_one === 'undefined') {
+        return null
+      }
+      return move_one
     },
-    moves_2: function() {
-      return Moves.find({user: '2'}, {sort: {createdAt: -1}, limit: 1});
+    move_2: function() {
+
+      var move_two =  Moves.findOne({user: '2'})
+      if (typeof move_two === 'undefined') {
+        return null
+      }
+      return move_two
     },
     user_1_score: function() {
-      return Scores.findOne({_id: '1'}).score;
+      var user_score = Scores.findOne({_id: '1'})
+      return typeof user_score === 'object' ? user_score.score : 0;
     },
     current_round: function(){
-        return Rounds.find().count()
+      return Rounds.find().count()
     },
     user_2_score: function() {
-      return Scores.findOne({_id: '2'}).score;
+      var user_score = Scores.findOne({_id: '2'})
+      return typeof user_score === 'object' ? user_score.score : 0;
     }
   });
 
@@ -105,8 +116,8 @@ function getRoundWinner(move1, move2) {
 function getWinningMove(moveName1, moveName2) {
   var moveNums = {rock: 1, paper: 2, scissors: 3};
   var numMoves = {1: "rock", 2: "paper", 3: "scissors"};
-  var maxMin = moveNums[moveName1] % 2 == moveNums[moveName2] % 2 ? min : max;
-  return numMoves(maxMin(moveNums[moveName1], moveNums[moveName2]));
+  var maxMin = moveNums[moveName1] % 2 == moveNums[moveName2] % 2 ? Math.min : Math.max;
+  return numMoves[maxMin(moveNums[moveName1], moveNums[moveName2])];
 }
 function gameOver() {
   // Tests if both players have score 3
@@ -161,8 +172,12 @@ if (Meteor.isServer) {
     
     if (typeof currentRound === 'object' && currentRound['status'] == 'open') {
 
+      var moves_for_user = Moves.find({user: params.user}).count();
 
-// check if the user already sent a move for this round (a.k.a. it exists in the mongoDB)
+       // check if the user already sent a move for this round (a.k.a. it exists in the mongoDB)
+       if (moves_for_user > 0){
+        return {'status': "failure", "reason": 'you alrady played your move!'}
+      }
       var a = Moves.insert({
         _id: params.user,
         user: params.user,
