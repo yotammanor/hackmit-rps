@@ -1,10 +1,11 @@
 function countdown(time) {
-	var countdown =  $("#countdown").countdown360({
-       	 	radius      : 60,
-         	seconds     : time,
-         	fontColor   : '#FFFFFF',
-         	autostart   : false,
-         	onComplete  : function () {
+	
+	return $("#countdown").countdown360({
+		radius      : 60,
+		seconds     : time,
+		fontColor   : '#FFFFFF',
+		autostart   : false,
+		onComplete  : function () {
 			var rpsImg = document.createElement("img");
 			rpsImg.src = "images/go.gif";
 			$("#countdown")[0].innerHTML="";
@@ -16,12 +17,13 @@ function countdown(time) {
 				var img2 = document.createElement("img");
 				img1.src = "images/loading.gif";
 				img2.src = "images/loading.gif";
+				img1.className = "loading-image";
+				img2.className = "loading-image";
 				document.getElementById("user1").appendChild(img1);//src="images/loading.gif";
 				document.getElementById("user2").appendChild(img2);//src="images/loading.gif";
 			}, 1000);
 		}
-		   });
-			countdown.start();
+	});
 }
 
 function selectPic() {
@@ -38,13 +40,32 @@ $(document).on("click","button",function(e){
 	e.preventDefault();
 });
 
+$(document).ready( function(){
+	$('body').on('DOMNodeInserted', '.move-by-player', function(e){
+		document.getElementById('user' + $(this).data('user')).innerHTML = '';
+
+		if ($('.move-by-player').length == 2) {
+			endOfRound()
+		}
+	});
+});
+
 function reset() {
 	document.getElementById("score1").innerHTML = 0;
 	document.getElementById("score2").innerHTML = 0;
 }
 
 function start() {
-	countdown(2);
+
+	var clock = countdown(2);
+	if (typeof clock.startedAt === 'undefined'){
+		clock.start();
+	} else {
+		var start = new Date(clock.startedAt)
+		var end = new Date()
+		clock._init()
+		clock.addSeconds(Math.floor((end - start)/1000) + 1)
+	}
 }
 
 function endOfGame() {
@@ -63,13 +84,14 @@ function endOfRound() {
 	var winner = Math.round(Math.random()) + 1; // winner will randomly be either 1 or 2
 	var picNum = Math.round(Math.random() * 5) + 1; // winner will randomly be an integer in the range 1-6
 	var id = document.getElementById("countdown");
-	var msg = document.createElement("div");
-	msg.innerHTML = "scissors beats rock, player " + winner + " wins this round!";
-	msg.style.fontSize = "150%";
+	// var msg = document.createElement("div");
+	// msg.innerHTML = "scissors beats rock, player " + winner + " wins this round!";
+	// msg.style.fontSize = "150%";
 	id.innerHTML = "";
 	var img = document.createElement("img");
 	img.src = "images/victory" + picNum + ".png";
-	id.appendChild(msg);
+	img.className = "img-rounded"
+	// id.appendChild(msg);
 	id.appendChild(img);
 	setTimeout(function(){
 		id.innerHTML = "";

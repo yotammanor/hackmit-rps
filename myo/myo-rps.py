@@ -26,7 +26,7 @@ import sys
 import requests
 
 USER = '1'
-URL = 'http://hackmit-rps.meteor.com/api/moves'
+URL = 'http://clash.meteor.com/api/moves'
 
 class Listener(libmyo.DeviceListener):
     """
@@ -81,6 +81,8 @@ class Listener(libmyo.DeviceListener):
         if pose == libmyo.Pose.fist:
             sendMove("rock", timestamp)
         elif pose == libmyo.Pose.fingers_spread:
+            sendMove("paper", timestamp)
+        elif pose == libmyo.Pose.wave_out:
             sendMove("paper", timestamp)
         elif pose == libmyo.Pose.wave_in:
             sendMove("scissors", timestamp)

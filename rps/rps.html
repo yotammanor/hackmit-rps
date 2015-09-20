@@ -11,45 +11,62 @@
 </head>
 
 <body>
-	<div class="row" id="nav_row">
-		<div class="nav-bar col-sm-3">Player One: <span id="score1">{{user_1_score}}</span></div>
-		<div class="nav-bar col-sm-6" id="name_of_game">Rock, Paper, Scissors, shoot! <br/> Round: <span>{{current_round}}</span></div>
-		<div class="nav-bar col-sm-3">Player Two: <span id="score2">{{user_2_score}}</span></div>
+	<div class="row scorebox" id="nav_row">
+		<!-- <div>{{> current_round}}</div> -->
+		<div class="nav-bar col-sm-3">Player One: <br><span id="score1">{{user_1_score}}</span></div>
+		<div class="nav-bar col-sm-6" id="name_of_game"><h1>Clash!</h1> Round: <span>{{current_round}}</span></div>
+		<div class="nav-bar col-sm-3">Player Two: <br><span id="score2">{{user_2_score}}</span></div>
 	</div>
 	<div class="row" id="main_row">
-		<div class="main-col col-sm-3" id="user1">
-			<img id="actions1"/>
-				<h2>User 1</h2>
-				{{#each moves_1}}
-				{{> move}}
-				{{/each}}
+		<div class="main-col col-sm-3">
+			<h2>Player One</h2>
+			<div id="user1"></div>
+			<div>{{#each move_1}}{{> move_obj}}{{/each}}</div>
 		</div>
 		<div class="main-col col-sm-6" id="countdown"></div>
-		<div class="main-col col-sm-3" id="user2">
-			<img id="actions2"/>
-				<h2>User 2</h2>
-				{{#each moves_2}}
-				{{> move}}
-				{{/each}}
+		<div class="main-col col-sm-3">
+			<h2>Player Two</h2>
+			<div id="user2"></div>
+			<div>{{#each move_2}}{{> move_obj}}{{/each}}</div>
 		</div>
 		<div class="clearfix visible-sm-block"></div>
 	</div>
-
+	<h2 id="win-message">{{#each winner}}{{> game_ended_message}}{{/each}}</h2>
 	<div class="row" id="game_options"> 
-		<button type="button" onClick='start()' id="start"> Yoni's  original Start button</button> 
-		<button type="button" id="start-round"> Start Round</button> 
-		<button type="button" id="end-round"> End Round</button> 
-		<button type="button" id="start-game"> Start Game</button> 
-		<button name='add-event' value='add avent' id='add-event'>add event</button>
+		<!-- <button type="button" onClick='start()' id="start"> Yoni's  original Start button</button>  -->
+		<button type="button" class="btn btn-default" id="start-round"> Start Round</button> 
+		<!-- <button type="button" class="btn btn-default" onclick="endOfRound()" id="end-round"> End Round</button>  -->
+		<button type="button" class="btn btn-danger" id="start-game"> Restart Game</button> 
+		<!-- <button name='add-event' class="btn btn-default" value='add avent' id='add-event'>add event</button> -->
 	</div>
 
 </body>
 
 
-<template name="move">
-	<p>{{user}}, {{createdAt}}, <span><img src="/images/{{move}}.png"  alt="Image not found"></span></p>
+<template name="move_obj">
+	<img class="move-by-player" id="move-by-player-{{user}}" data-user='{{user}}' src="/images/{{move}}.png"  alt="Image not found" >
 </template>
 
 <template name="current_round">
 	{{>current_round}}
+</template>
+
+<template name="game_ended_message">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Game Over</h4>
+			</div>
+			<div class="modal-body">
+				<p>The winner is: {{winner}}</p>
+				<p>The glory belongs to thy glorious player for eternity! <br></p>
+			</div>
+			<div class="modal-footer">
+				<p style="text-align:center; color:#B7B1B1">Or until the next game begins..</p>
+				<p style="text-align:center; color:#B7B1B1">It'll start again shortly.</p>
+			</div>
+		</div><!--/.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
 </template>
