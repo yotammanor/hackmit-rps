@@ -2,6 +2,8 @@ Moves = new Mongo.Collection("moves");
 
 Scores = new Mongo.Collection("scores")
 
+Rounds = new Mongo.Collection("rounds")
+
 if (Meteor.isClient) {
 
 
@@ -11,14 +13,13 @@ if (Meteor.isClient) {
     // {'user': 2},
     // ]
     moves_1: function() {
-      var moves_1 = Moves.find({user: '1'}, {sort: {createdAt: -1}, limit: 1});
-      return [moves_1.fetch()[0]];
+      return moves_1 = Moves.find({user: '1'}, {sort: {createdAt: -1}, limit: 1})
     },
     moves_2: function() {
       return Moves.find({user: '2'}, {sort: {createdAt: -1}, limit: 1});
     },
     user_1_score: function() {
-      return Scores.findOne({user: '1'}).score;
+      return Scores.findOne({_id: '1'}).score;
     }
 
   });
@@ -27,6 +28,7 @@ if (Meteor.isClient) {
     "click #add-event": function (event){
 
       Moves.insert({
+        _id: '1',
         move: 'rock',
         user: '1',
         createdAt: new Date()
@@ -38,9 +40,42 @@ if (Meteor.isClient) {
     },
     "click #start-round": function(event){
       console.log('round starts!')
-      var user = Moves.findOne({user: '1'})
-      Moves.update({user: user.user}, {$set: {score: user.score + 1}})
+      // initiate countdown, remove all current moves from db.
+      var round = Rounds.insert({
+        createdAt: new Date(),
+        status: 'pending',
+      })
+
+
+
+      // start animation
+      start()
+
+      // Open round for input
+      Rounds.update({_id: round}, {$set: {status: 'open'}})
+      console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
     },
+    "click #end-round": function(event){
+      // close round, assess round results.
+
+      user_1_move = Moves.findOne({user: '1'})
+      
+
+      // Add a point to winning player,
+      var user = Scores.findOne({_id: '1'})
+      Scores.update({_id: '1'}, {$set: {score: user.score + 1}})
+
+      // Delete old moves.
+      Moves.remove({_id: '1'});
+      Moves.remove({_id: '2'});
+
+      // Set round to be closed.
+      var open_rounds = Rounds.find({status: 'open'}, {sort: {createdAt: -1}, limit: 1})
+      round_id = open_rounds.fetch()[0]._id
+      Rounds.update({_id: round_id}, {$set: {status: 'closed'}})
+
+      console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
+    }
 
   })
 }
@@ -70,70 +105,43 @@ if (Meteor.isServer) {
           } else {
             params = this.queryParams;
           }
-
-          var a = Moves.insert({
-            user: params.user,
-            move: params.move,
-            createdAt: new Date()
-          })
-          return {"status": 'success', "data": a}
+          var currentRound = Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]
+          console.log(typeof currentRound)
+          if (typeof currentRound === 'object' && currentRound['status'] == 'open') {
+            var a = Moves.insert({
+              _id: params.user,
+              user: params.user,
+              move: params.move,
+              createdAt: new Date()
+            })
+            return {"status": 'success', "data": a}
+          } else {
+            return {'status': "failure", 'reason': 'round is not open.'}
+          }
         }
       },
     }
   });
 
 
-  // // Maps to: /api/moves/:id
-  // Api.addRoute('moves/:id', {authRequired: false}, {
-  //   // get: function () {
-  //   //   return Moves.findOne(this.urlParams.id);
-  //   // },
-  //   // delete: {
-  //   //   roleRequired: ['author', 'admin'],
-  //   //   action: function () {
-  //   //     if (Moves.remove(this.urlParams.id)) {
-  //   //       return {status: 'success', data: {message: 'Article removed'}};
-  //   //     }
-  //   //     return {
-  //   //       statusCode: 404,
-  //   //       body: {status: 'fail', message: 'Article not found'}
-  //   //     };
-  //   //   }
-  //   // },
-  //   get: function () {
-  //     return Moves.find({}, {sort: {createdAt: -1}})
-  //   },
-  //   post: {
-  //     action: function() {
-  //       Moves.insert({
-  //         move: this.urlParams.move,
-  //         user: this.urlParams.user,
-  //         createdAt: new Date()
-  //       })
-  //       return {status: 'success', data: Moves.find({user: this.urlParams.user}, {sort: {createdAt: -1}, limit:1})};
-  //     }
-  //   }
-  // });
+  function resetScores() {
 
-function resetScores() {
-  Scores.remove({});
+    Scores.update({_id: '1'}, {$set: {score: 0}})
+    Scores.update({_id: '2'}, {$set: {score: 0}})
+  }
 
-  Scores.insert({
-    id: '1',
-    user: '1',
-    score: '0'
-  })
 
-  Scores.insert({
-    id: '1',
-    user: '1',
-    score: '0'
-  })
-}
-
-Meteor.startup(function () {
+  Meteor.startup(function () {
     // code to run on server at startup
+    Moves.remove({});
+    Scores.remove({});
+    Rounds.remove({});
+
+    Scores.insert({_id:'1', user: '1', score: 0})
+    Scores.insert({_id:'2', user: '2', score: 0})
     resetScores()
   });
 }
+
+
 
