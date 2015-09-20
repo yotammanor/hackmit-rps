@@ -23,7 +23,10 @@ from __future__ import print_function
 import myo as libmyo; libmyo.init()
 import time
 import sys
+import requests
 
+USER = '1'
+URL = 'http://hackmit-rps.meteor.com/api/moves'
 
 class Listener(libmyo.DeviceListener):
     """
@@ -75,16 +78,12 @@ class Listener(libmyo.DeviceListener):
         self.output()
 
     def on_pose(self, myo, timestamp, pose):
-        if pose == libmyo.Pose.double_tap:
-            sendMove("lizard")
+        if pose == libmyo.Pose.fist:
+            sendMove("rock", timestamp)
         elif pose == libmyo.Pose.fingers_spread:
-            sendMove("spock")
-        elif pose == libmyo.Pose.fist:
-            sendMove("rock")
+            sendMove("paper", timestamp)
         elif pose == libmyo.Pose.wave_in:
-            sendMove("paper")
-        elif pose == libmyo.Pose.wave_out:
-            sendMove("scissors")
+            sendMove("scissors", timestamp)
 
     def on_orientation_data(self, myo, timestamp, orientation):
         pass
@@ -152,9 +151,10 @@ class Listener(libmyo.DeviceListener):
         Called when the warmup completed.
         """
 
-def sendMove(move):
-    # http request stuff goes here
-    pass
+def sendMove(move, timestamp):
+    print(move)
+    payload = {'user': USER, 'move': move, 'createdAt': timestamp}
+    requests.post(URL, data=payload)
 
 def main():
     print("Connecting to Myo ... Use CTRL^C to exit.")
