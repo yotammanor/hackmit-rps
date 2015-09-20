@@ -68,6 +68,7 @@ function start() {
 	}
 }
 
+
 function endOfGame() {
 	var winner = Math.round(Math.random()) + 1; // winner will randomly be either 1 or 2
 	var msg = "Player " + winner + " is the winner!!";
