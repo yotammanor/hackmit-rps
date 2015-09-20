@@ -98,4 +98,5 @@ fieldset[disabled] .btn-default.active {
 
 #score1, #score2 {
 	color: #FFFFFF;
+	font-size: 36px;
 }

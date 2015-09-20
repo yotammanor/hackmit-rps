@@ -117,6 +117,7 @@ function gameOver() {
 
 function endGame() {
   resetScores()
+  Rounds.remove({})
 };
 
 function resetScores() {
@@ -159,6 +160,9 @@ if (Meteor.isServer) {
     console.log(typeof currentRound);
     
     if (typeof currentRound === 'object' && currentRound['status'] == 'open') {
+
+
+// check if the user already sent a move for this round (a.k.a. it exists in the mongoDB)
       var a = Moves.insert({
         _id: params.user,
         user: params.user,
