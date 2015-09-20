@@ -55,30 +55,31 @@ if (Meteor.isClient) {
       Rounds.update({_id: round}, {$set: {status: 'open'}})
       console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
     },
-    "click #end-round": function(event){
-      // close round, assess round results.
-
-      user_1_move = Moves.findOne({user: '1'})
-      user_2_move = Moves.findOne({user: '2'})
-      
-
-      // Add a point to winning player,
-      var user = Scores.findOne({_id: '1'})
-      Scores.update({_id: '1'}, {$set: {score: user.score + 1}})
-
-      // Delete old moves.
-      Moves.remove({_id: '1'});
-      Moves.remove({_id: '2'});
-
-      // Set round to be closed.
-      var open_rounds = Rounds.find({status: 'open'}, {sort: {createdAt: -1}, limit: 1})
-      round_id = open_rounds.fetch()[0]._id
-      Rounds.update({_id: round_id}, {$set: {status: 'closed'}})
-
-      console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
-    }
-
+    "click #end-round": endRound
   })
+}
+
+function endRound() {
+  // close round, assess round results.
+
+  user_1_move = Moves.findOne({user: '1'})
+  user_2_move = Moves.findOne({user: '2'})
+  
+
+  // Add a point to winning player,
+  var user = Scores.findOne({_id: '1'})
+  Scores.update({_id: '1'}, {$set: {score: user.score + 1}})
+
+  // Delete old moves.
+  Moves.remove({_id: '1'});
+  Moves.remove({_id: '2'});
+
+  // Set round to be closed.
+  var open_rounds = Rounds.find({status: 'open'}, {sort: {createdAt: -1}, limit: 1})
+  round_id = open_rounds.fetch()[0]._id
+  Rounds.update({_id: round_id}, {$set: {status: 'closed'}})
+
+  console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
 }
 
 if (Meteor.isServer) {
@@ -98,32 +99,37 @@ if (Meteor.isServer) {
     endpoints: {
       post: {
         authRequired: false,
-        action: function () {
-
-          var params 
-          if (this.bodyParams.hasOwnProperty('user')) {
-            params = this.bodyParams;
-          } else {
-            params = this.queryParams;
-          }
-          var currentRound = Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]
-          console.log(typeof currentRound)
-          if (typeof currentRound === 'object' && currentRound['status'] == 'open') {
-            var a = Moves.insert({
-              _id: params.user,
-              user: params.user,
-              move: params.move,
-              createdAt: new Date()
-            })
-            return {"status": 'success', "data": a}
-          } else {
-            return {'status': "failure", 'reason': 'round is not open.'}
-          }
-        }
+        action: onPost,
       },
     }
   });
 
+  function onPost() {
+    var params;
+    if (this.bodyParams.hasOwnProperty('user')) {
+      params = this.bodyParams;
+    } else {
+      params = this.queryParams;
+    }
+
+    var currentRound = Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0];
+    console.log(typeof currentRound);
+    
+    if (typeof currentRound === 'object' && currentRound['status'] == 'open') {
+      var a = Moves.insert({
+        _id: params.user,
+        user: params.user,
+        move: params.move,
+        createdAt: new Date()
+      });
+      if (Moves.findOne({_id: '1'}) && Moves.findOne({_id: '2'})) {
+        endRound();
+      }
+      return {"status": 'success', "data": a}
+    } else {
+      return {'status': "failure", 'reason': 'round is not open.'}
+    }
+  }
 
   function resetScores() {
 
