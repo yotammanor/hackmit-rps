@@ -26,7 +26,7 @@ import sys
 import requests
 
 USER = '1'
-URL = 'http://hackmit-rps.meteor.com/api/moves'
+URL = 'http://clash.meteor.com/api/moves'
 
 class Listener(libmyo.DeviceListener):
     """
