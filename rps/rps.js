@@ -65,10 +65,13 @@ function endRound() {
   user_1_move = Moves.findOne({user: '1'})
   user_2_move = Moves.findOne({user: '2'})
   
-
   // Add a point to winning player,
-  var user = Scores.findOne({_id: '1'})
-  Scores.update({_id: '1'}, {$set: {score: user.score + 1}})
+  var move = getRoundWinner(user_1_move, user_2_move);
+  if (move) {
+    var user = move.user;
+    var userScore = Scores.findOne({_id: user});
+    Scores.update({_id: user}, {$set: {score: userScore.score + 1}});
+  }
 
   // Delete old moves.
   Moves.remove({_id: '1'});
@@ -79,7 +82,24 @@ function endRound() {
   round_id = open_rounds.fetch()[0]._id
   Rounds.update({_id: round_id}, {$set: {status: 'closed'}})
 
-  console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status'])
+  console.log(Rounds.find({}, {sort: {createdAt: -1}, limit: 1}).fetch()[0]['status']);
+
+  if (gameOver()) {
+    endGame();
+  }
+}
+
+function gameOver() {
+  // Tests if both players have score 3
+  var user1Score = Scores.findOne({_id: '1'});
+  var user2Score = Scores.findOne({_id: '2'});
+  return (user1Score.score == 3 && user2Score.score == 3);
+}
+
+function endGame() {
+  // Set scores to zero
+  Scores.update({_id: '1'}, {$set: {score: 0}});
+  Scores.update({_id: '2'}, {$set: {score: 0}});
 }
 
 if (Meteor.isServer) {
